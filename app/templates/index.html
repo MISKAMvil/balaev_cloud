@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Если пользователь аутентифицирован -->
+    {% if current_user.is_authenticated %}
+        <p class="text-center">Аутентификация пройдена. Здравствуй, <b>{{ current_user.login }}!</b></p>
+        <img class="rounded mx-auto d-block" src="https://media.giphy.com/media/11sBLVxNs7v6WA/giphy.gif" alt="funny GIF" width="100%">
+    {% else %}
+        <p class="text-center">Аутентификация не пройдена!</p>
+        <img class="rounded mx-auto d-block" src="https://media.giphy.com/media/CqJFW0GbTMY0/giphy.gif" alt="funny GIF" width="50%">
+    {% endif %}
+{% endblock %}
