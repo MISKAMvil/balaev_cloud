@@ -147,3 +147,10 @@ if __name__ == '__main__':
     # port = int(input('Введите порт >>> '))
     # app.run(host='0.0.0.0', port=port)
     app.run(host='0.0.0.0', port=80)
+
+
+@app.route('/all_users')
+def all_users():
+    users = get_users()
+    return render_template('all_users.html', users=users)
+
