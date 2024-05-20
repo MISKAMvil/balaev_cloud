@@ -134,35 +134,53 @@ import requests
 
 IAM_TOKEN = 't1.9euelZrHj5aVl56WjJSOzIuYjI_Kl-3rnpWaj5zJz5Gbio2LjYnIl5eQz5Tl9Pc3Y1JN-e8xSGnY3fT3dxFQTfnvMUhp2M3n9euelZrOzJCMyIqKmo6ampCaiZOUje_8zef1656VmpmXyIzLiY6bzMmNlpmLzMaT7_3F656Vms7MkIzIioqajpqakJqJk5SN.mhfwTHJL_29fNlng0y00-z0cffnewP7iYZ0eplf8O-0ocKZNLhq-JfaFGiXt29Df5C5944k6nkvKbf_zodO6AA'
 
-target_language = 'ru'
-texts = ["Hello", "World"]
-body = {
-    "targetLanguageCode": target_language,
-    "texts": texts
-}
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer {0}".format(IAM_TOKEN)
-}
-response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/languages',
-    json = body,
-    headers = headers
-)
-
-dict_languages = response.json()
-my_dict = {}
-
-for pair in dict_languages['languages']:
-    values = list(pair.values())
-    if len(values) == 2:
-        code, name = values
-        if code != name:
-            my_dict[code] = name
-
 @app.route('/translate', methods=['GET', 'POST'])
 def translate():
-    return render_template('translate.html', languages = my_dict)
+    # target_language = 'ru'
+    # texts = ["Hello", "World"]
+    # body = {
+    #     "targetLanguageCode": target_language,
+    #     "texts": texts
+    # }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {0}".format(IAM_TOKEN)
+    }
+    response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/languages',
+        # json=body,
+        headers=headers
+    )
 
+    dict_languages = response.json()
+    my_dict = {}
+
+    for pair in dict_languages['languages']:
+        values = list(pair.values())
+        if len(values) == 2:
+            code, name = values
+            if code != name:
+                my_dict[code] = name
+
+    translated_text = ""
+    input_text = ""
+    input_language = ""
+    if request.method == 'POST':
+        input_text = request.form.get('inputText')
+        input_language = request.form.get('inputLanguage')
+        if input_text and input_language:
+            translate_body = {
+                "targetLanguageCode": input_language,
+                "texts": [input_text]
+            }
+            translate_response = requests.post(
+                'https://translate.api.cloud.yandex.net/translate/v2/translate',
+                json=translate_body,
+                headers=headers
+            )
+            translate_result = translate_response.json()
+            translated_text = translate_result['translations'][0]['text']
+
+    return render_template('translate.html', languages=my_dict, input_text=input_text, input_language=input_language, translated_text=translated_text)
 
 
 # Запуск приложения при непосредственном запуске файла
