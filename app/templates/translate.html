@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="text-center">Translate</h2>
+<div class="row justify-content-md-center">
+<form method="POST" class="col col-lg-6">
+    <div class="mb-3">
+        <label for="inputText" class="form-label">Введите текст</label>
+        <input type="text" class="form-control" id="inputText" name="inputText" value="{{ input_text }}">
+    </div>
+    <div class="mb-3">
+        <label for="inputLanguage" class="form-label">Выберите язык</label>
+        <select class="form-control" id="inputLanguage" name="inputLanguage">
+            {% for code, name in languages.items() %}
+                <option value="{{ code }}" {% if input_language == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3 d-grid gap-2 col-12 mx-auto">
+        <button type="submit" class="btn btn-primary">Перевести текст</button>
+    </div>
+    <div class="my-7">
+        <label for="outputTextarea" class="form-label">Результат</label>
+        <textarea class="form-control" id="outputTextarea" name="outputTextarea" rows="5" readonly></textarea>
+      </div>
+</form>
+</div>
+{% endblock %}

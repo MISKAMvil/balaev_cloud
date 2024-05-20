@@ -53,19 +53,6 @@ def index():
     return render_template('index.html')
 
 
-# Страница с подсчетом количества посещений
-# session - словарь (ключ-значение)
-# Если значение есть, то оно увеличивается на 1 по ключу,
-# иначе инициализируется со значением 1
-@app.route('/visits')
-def visits():
-    if 'visits_count' in session:
-        session['visits_count'] += 1
-    else:
-        session['visits_count'] = 1
-    return render_template('visits.html', title="Счётчик посещений")
-
-
 # Используя объект request, извлекаем значения переданные в форме
 # login и password и проверяем пользователя на существование в "БД"
 # login_user(UserClass, remember) - обновляет данные сессии и при
@@ -140,6 +127,42 @@ def load_user(user_id):
         if user['id'] == int(user_id):
             return User(user['id'], user['login'])
     return None
+
+
+
+import requests
+
+IAM_TOKEN = 't1.9euelZrHj5aVl56WjJSOzIuYjI_Kl-3rnpWaj5zJz5Gbio2LjYnIl5eQz5Tl9Pc3Y1JN-e8xSGnY3fT3dxFQTfnvMUhp2M3n9euelZrOzJCMyIqKmo6ampCaiZOUje_8zef1656VmpmXyIzLiY6bzMmNlpmLzMaT7_3F656Vms7MkIzIioqajpqakJqJk5SN.mhfwTHJL_29fNlng0y00-z0cffnewP7iYZ0eplf8O-0ocKZNLhq-JfaFGiXt29Df5C5944k6nkvKbf_zodO6AA'
+
+target_language = 'ru'
+texts = ["Hello", "World"]
+body = {
+    "targetLanguageCode": target_language,
+    "texts": texts
+}
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {0}".format(IAM_TOKEN)
+}
+response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/languages',
+    json = body,
+    headers = headers
+)
+
+dict_languages = response.json()
+my_dict = {}
+
+for pair in dict_languages['languages']:
+    values = list(pair.values())
+    if len(values) == 2:
+        code, name = values
+        if code != name:
+            my_dict[code] = name
+
+@app.route('/translate', methods=['GET', 'POST'])
+def translate():
+    return render_template('translate.html', languages = my_dict)
+
 
 
 # Запуск приложения при непосредственном запуске файла
