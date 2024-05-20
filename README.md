@@ -1,2 +1,2 @@
 # balaev_cloud
-My project for laboratory work 2!
+My project for Yandex Cloud!
